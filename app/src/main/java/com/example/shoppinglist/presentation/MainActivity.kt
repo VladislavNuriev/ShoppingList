@@ -6,13 +6,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
+    private lateinit var shopListAdapter: ShoppingListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,17 +24,32 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        var counter = 1
+
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.shopList.observe(this, Observer {
+
+        setupRecyclerView()
+
+        viewModel.shopList.observe(this) {
             Log.d("MainActivity", "observerShopList: ${it.toString()}")
-            if (counter == 1) {
-                val item = it[1]
-                viewModel.changeEnableState(item)
-                counter++
-            }
-        })
+            shopListAdapter.shopList = it
+        }
 
 
+    }
+
+    private fun setupRecyclerView() {
+        shopListAdapter = ShoppingListAdapter()
+        val recyclerView: RecyclerView = findViewById(R.id.rv_shop_list)
+        with(recyclerView) {
+            adapter = shopListAdapter
+            recycledViewPool.setMaxRecycledViews(
+                ShoppingListAdapter.VIEW_TYPE_ENABLED,
+                ShoppingListAdapter.MAX_POOL_SIZE
+            )
+            recycledViewPool.setMaxRecycledViews(
+                ShoppingListAdapter.VIEW_TYPE_DISABLED,
+                ShoppingListAdapter.MAX_POOL_SIZE
+            )
+        }
     }
 }
