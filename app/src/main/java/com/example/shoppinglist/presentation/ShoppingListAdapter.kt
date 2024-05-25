@@ -21,12 +21,14 @@ class ShoppingListAdapter() :
         const val MAX_POOL_SIZE = 15
     }
 
-
     var shopList = listOf<ShopItem>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
+
+    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
+    var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val textViewName: TextView
@@ -62,8 +64,10 @@ class ShoppingListAdapter() :
             textViewName.text = shopItem.name
             textViewCount.text = shopItem.count.toString()
             view.setOnLongClickListener {
+                onShopItemLongClickListener?.invoke(shopItem)
                 true
             }
+            view.setOnClickListener { onShopItemClickListener?.invoke(shopItem) }
         }
     }
 
@@ -75,4 +79,5 @@ class ShoppingListAdapter() :
             VIEW_TYPE_ENABLED
         else VIEW_TYPE_DISABLED
     }
+
 }
