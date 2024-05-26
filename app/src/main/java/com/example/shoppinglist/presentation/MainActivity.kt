@@ -2,7 +2,6 @@ package com.example.shoppinglist.presentation
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -70,11 +69,6 @@ class MainActivity : AppCompatActivity() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.shopList[viewHolder.adapterPosition]
                 viewModel.deleteShopItem(item)
-                Toast.makeText(
-                    this@MainActivity,
-                    "Item Deleted",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
