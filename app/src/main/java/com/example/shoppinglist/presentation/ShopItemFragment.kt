@@ -1,5 +1,6 @@
 package com.example.shoppinglist.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,16 +12,26 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.databinding.FragmentShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
 
-class ShopItemFragment : Fragment() {
+class ShopItemFragment : Fragment(){
 
 
     private var _binding: FragmentShopItemBinding? = null
     private val binding
         get() = _binding!!
     private lateinit var viewModel: ShopItemViewModel
+    private lateinit var onEditingFinished: OnEditingFinishedListener
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener){
+            onEditingFinished = context
+        } else {
+            throw RuntimeException("OnEditingFinishedListener is not implemented in ${context.toString()}")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,7 +112,7 @@ class ShopItemFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressedDispatcher?.onBackPressed()
+            onEditingFinished.onEditingFinish()
         }
         viewModel.errorInputName.observe(viewLifecycleOwner) {
             if (it) {
@@ -124,6 +135,9 @@ class ShopItemFragment : Fragment() {
             binding.textInputCount.error = null
             viewModel.resetErrorInputCount()
         }
+    }
+    interface OnEditingFinishedListener{
+        fun onEditingFinish()
     }
 
     companion object {
