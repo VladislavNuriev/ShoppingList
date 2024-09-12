@@ -17,6 +17,8 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()
+        // Ниже проверка на наличие savedInstanceState - если не null, значит активити
+        // перезагружается сама (смена ориентации и т.д.)
         if (savedInstanceState == null) {
             launchRightMode()
         }
