@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.databinding.FragmentShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
+import javax.inject.Inject
 
 class ShopItemFragment : Fragment(){
 
@@ -18,13 +19,26 @@ class ShopItemFragment : Fragment(){
     private var _binding: FragmentShopItemBinding? = null
     private val binding
         get() = _binding!!
-    private lateinit var viewModel: ShopItemViewModel
+
+
+    @Inject
+    lateinit var viewmodelFactory: ViewModelFactory
+
+    private val viewModel by lazy {
+        ViewModelProvider(this, viewmodelFactory)[ShopItemViewModel::class.java]
+    }
+
+    private val component by lazy {
+        (requireActivity().application as ShoppingListApplication).appComponent
+    }
+
     private lateinit var onEditingFinished: OnEditingFinishedListener
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
 
     override fun onAttach(context: Context) {
+        component.inject(this)
         super.onAttach(context)
         if (context is OnEditingFinishedListener){
             onEditingFinished = context
@@ -50,7 +64,6 @@ class ShopItemFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         observeViewModel()
         addTextChangeListeners()
         launchRightMode()
